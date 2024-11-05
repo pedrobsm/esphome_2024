@@ -1,0 +1,61 @@
+switch:
+  - id: ${name}_${division_id_1}_thermostat
+    platform: gpio
+    name: "${division_1} Thermostat"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: outputs
+      number: 0
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_${division_id_2}_thermostat
+    platform: gpio
+    name: "${division_2} Thermostat"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: outputs
+      number: 1
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_${division_id_3}_thermostat
+    platform: gpio
+    name: "${division_3} Thermostat"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: outputs
+      number: 2
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_${division_id_4}_thermostat
+    platform: gpio
+    name: "${division_4} Thermostat"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: outputs
+      number: 3
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_heat_pump_switch
+    platform: gpio
+    name: "Heat Pump Switch"
+    restore_mode: ALWAYS_OFF #Protects from reset
+    pin:
+      pcf8574: outputs
+      number: 4
+      mode: OUTPUT
+      inverted: True
+    device_class: switch
+  - id: ${name}_water_circulator
+    platform: gpio
+    name: "Water Circulator"
+    restore_mode: ALWAYS_OFF #Protects from reset
+    pin:
+      pcf8574: outputs
+      number: 5
+      mode: OUTPUT
+      inverted: True
+
+  - platform: restart
+    name: "${name}_restart"
+    web_server:
+      sorting_group_id: sort_group_settings

@@ -1,0 +1,239 @@
+sensor:
+  - <<: !include
+      file: division_sensors_common.yaml
+      vars:
+        nr: 1
+        mac: "A4:C1:38:80:89:FB"
+        bkey: "bd5f878afe292291fc3d4f91880bcf22"
+  - <<: !include
+      file: division_sensors_common.yaml
+      vars:
+        nr: 2
+        mac: "A4:C1:38:21:29:43"
+        bkey: "3e4941bbecfc2bfddad439edb0249259"
+  - <<: !include
+      file: division_sensors_common.yaml
+      vars:
+        nr: 3
+        mac: "A4:C1:38:9D:AF:D3"
+        bkey: "ec082232e57ee4ad93941991544e0db4"
+  - <<: !include
+      file: division_sensors_common.yaml
+      vars:
+        nr: 4
+        mac: "A4:C1:38:CC:03:7F"
+        bkey: "9ff16fda831f9158ecd2f402f4a0913b"
+
+
+  # - platform: xiaomi_lywsd03mmc
+  #   mac_address: "A4:C1:38:07:E0:39"
+  #   bindkey: "e68b02250acd682a8742d355cba55151"
+  #   temperature:
+  #     name: "Entrance Temperature"
+  #   humidity:
+  #     name: "Entrance Humidity"
+  #   battery_level:
+  #     name: "Entrance Sensor Battery"
+
+  - platform: dallas_temp
+    address: 0x5101193808681428
+    name: "${name} Inlet Temperature"
+    id: "${name}_inlet_temp"
+    one_wire_id: dallas_1
+  - platform: dallas_temp
+    address: 0x9D011937F7E71028
+    name: "${name} Outlet Temperature"
+    id: "${name}_outlet_temp"
+    one_wire_id: dallas_1
+  # - platform: dallas_temp
+  #   address: 0xF73C01D6071E8D28
+  #   name: "${name} Entrance Floor Temperature"
+  #   id: "${name}_entrance_floor_temp"
+  #   one_wire_id: dallas_1
+
+  #------------------------------- Check Uptime ------------------------
+  - platform: uptime
+    name: Uptime Seconds
+    id: uptime_seconds
+    update_interval: 60s
+
+  # PID Temporary sensors MAAANYYY
+
+  # - <<: !include { file: pid_sensors_common.yaml, vars: { xr: 1 } }
+  # - <<: !include { file: pid_sensors_common.yaml, vars: { xr: 2 } }
+  # - <<: !include { file: pid_sensors_common.yaml, vars: { xr: 3 } }
+  # - <<: !include { file: pid_sensors_common.yaml, vars: { xr: 4 } }
+
+
+  ########################################################## -4-
+  - platform: pid
+    name: "PID Climate Result ${division_4}"
+    type: RESULT
+    climate_id: ${division_id_4}_temperature_control
+  - platform: pid
+    name: "PID Climate HEAT Output ${division_4}"
+    type: HEAT
+    climate_id: ${division_id_4}_temperature_control
+  - platform: pid
+    name: "PID Climate Error ${division_4}"
+    type: ERROR
+    climate_id: ${division_id_4}_temperature_control
+  - platform: pid
+    name: "PID Climate PROPORTIONAL ${division_4}"
+    type: PROPORTIONAL
+    climate_id: ${division_id_4}_temperature_control
+  - platform: pid
+    name: "PID Climate INTEGRAL ${division_4}"
+    type: INTEGRAL
+    climate_id: ${division_id_4}_temperature_control
+  - platform: pid
+    name: "PID Climate DERIVATIVE ${division_4}"
+    type: DERIVATIVE
+    climate_id: ${division_id_4}_temperature_control
+  - platform: pid
+    name: "PID Climate KP ${division_4}"
+    type: KP
+    climate_id: ${division_id_4}_temperature_control
+  - platform: pid
+    name: "PID Climate KI ${division_4}"
+    type: KI
+    climate_id: ${division_id_4}_temperature_control
+  - platform: pid
+    name: "PID Climate KD ${division_4}"
+    type: KD
+    climate_id: ${division_id_4}_temperature_control
+
+  # - platform: template
+  #   name: "${name} ${division_1} Output Power"
+  #   lambda: |-
+  #     return id(${name}_${division_id_1}_pwm_control).state_;
+  #   update_interval: 60s
+  # - platform: template
+  #   name: "${name} ${division_2} Output Power"
+  #   lambda: |-
+  #     return id(${name}_${division_id_2}_pwm_control).state_;
+  #   update_interval: 60s
+  # - platform: template
+  #   name: "${name} ${division_3} Output Power"
+  #   lambda: |-
+  #     return id(${name}_${division_id_3}_pwm_control).state_;
+  #   update_interval: 60s
+  # - platform: template
+  #   name: "${name} ${division_4} Output Power"
+  #   lambda: |-
+  #     return id(${name}_${division_id_4}_pwm_control).state_;
+  #   update_interval: 60s
+
+
+text_sensor:
+  - platform: template
+    name: Uptime
+    id: uptime_human
+    lambda: |-
+      uint32_t dur = id(uptime_seconds).state;
+      int dys = 0;
+      int hrs = 0;
+      int mnts = 0;
+      if (dur > 86399) {
+        dys = trunc(dur / 86400);
+        dur = dur - (dys * 86400);
+      }
+      if (dur > 3599) {
+        hrs = trunc(dur / 3600);
+        dur = dur - (hrs * 3600);
+      }
+      if (dur > 59) {
+        mnts = trunc(dur / 60);
+        dur = dur - (mnts * 60);
+      }
+      char buffer[17];
+      sprintf(buffer, "%ud %02uh %02um %02us", dys, hrs, mnts, dur);
+      return {buffer};
+    icon: mdi:clock-start
+    update_interval: 60s
+    on_value:
+      then:
+        - logger.log:
+            format: "------------ Uptime is %s -------------"
+            args: ["id(uptime_human).state.c_str()"]
+
+binary_sensor:
+  #------------------------------- Thermometer presences ------------------------
+  - platform: ble_presence
+    mac_address: A4:C1:38:80:89:FB
+    name: "Bathroom Sensor Presence"
+    device_class: connectivity
+  - platform: ble_presence
+    mac_address: A4:C1:38:21:29:43
+    name: "Main Bedroom Sensor Presence"
+    device_class: connectivity
+  - platform: ble_presence
+    mac_address: A4:C1:38:9D:AF:D3
+    name: "Spare Bedroom Sensor Presence"
+    device_class: connectivity
+  - platform: ble_presence
+    mac_address: A4:C1:38:CC:03:7F
+    name: "Living Room Sensor Presence"
+    device_class: connectivity
+  - platform: ble_presence
+    mac_address: A4:C1:38:07:E0:39
+    name: "Entrance Sensor Presence"
+    device_class: connectivity
+
+    #------------------------------ Control if at least one of the thermostats is ON to keep heatpump ON ----------
+  - platform: template
+    name: "Any thermostat ON"
+    id: any_thermostat_on
+    lambda: |-
+      // if(id(${name}_bathroom_thermostat).state or id(${name}_main_bedroom_thermostat).state or id(${name}_spare_bedroom_thermostat).state or id(${name}_living_room_thermostat).state){
+      //   return true;
+      // } else {
+      //   return false;
+      // }
+      return id(${name}_bathroom_thermostat).state or id(${name}_main_bedroom_thermostat).state or id(${name}_spare_bedroom_thermostat).state or id(${name}_living_room_thermostat).state;
+    on_press:
+      - script.execute: start_heat_pump
+    on_release:
+      - script.execute: stop_heat_pump
+    device_class: running
+  #------------------------------- Home Assistant Entities ----------
+  - platform: homeassistant
+    name: "Global switch state"
+    entity_id: switch.shelly_swshlhea
+
+###------ HeatPump Status Sensors
+  - platform: template
+    id: ${name}_heat_pump_is_running
+    name: "${name} Heat Pump Running"
+    device_class: running
+  - platform: template
+    id: ${name}_heat_pump_has_power
+    device_class: plug
+    internal: True
+
+  - platform: status
+    name: "${name} Status"
+  #------------------------------- Front Buttons ------------------------
+  - platform: gpio
+    name: "${name} front button"
+    id: "${name}_front_button"
+    pin:
+      number: 39
+      inverted: True
+    #      mode: INPUT_PULLUP
+    # on_press:
+    #   then:
+    #     - light.toggle: ${name}_status_led
+
+  # - platform: gpio
+  #   name: "BUTTON_B_PIN"
+  #   pin:
+  #     number: 38
+  #     inverted: True
+  #     mode: INPUT_PULLUP
+  # - platform: gpio
+  #   name: "BUTTON_C_PIN"
+  #   pin:
+  #     number: 37
+  #     inverted: True
+  #     mode: INPUT_PULLUP

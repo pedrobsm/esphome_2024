@@ -1,0 +1,75 @@
+esphome:
+  name: ${name}
+  platform: ESP32
+  board: m5stack-core-esp32
+  libraries:
+    - "Wire"
+    - "ArduinoJson"
+  on_boot:
+    priority: -100
+    then:
+      - script.execute: time_out
+
+debug:
+  update_interval: 5s
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "w9eH7JpeI6RcYtU//VqNe6zi5gw2PNpiRV1XSIeMLxI="
+
+ota:
+  password: "b964f2f7595734653d96fd4f84372486"
+
+wifi:
+  ssid: ${wifi_ssid}
+  password: ${wifi_password}
+  # manual_ip:
+  #   static_ip: 192.168.33.90
+  #   gateway: 192.168.33.1
+  #   subnet: 255.255.255.0
+  #   dns1: 192.168.33.1
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  # ap:
+  #   ssid: "M5Stack-Core Fallback Hotspot"
+  #   password: "pvGNFloSIKXL"
+
+captive_portal:
+
+web_server:
+  port: 80
+
+spi:
+  clk_pin: 18
+  mosi_pin: 23
+  miso_pin: 19
+
+i2c:
+  sda: 21
+  scl: 22
+  scan: true
+
+http_request:
+  useragent: esphome/device
+  timeout: 10s
+  id: http_request_data
+
+pcf8574:
+  - id: "hub_relays"
+    address: 0x27
+    pcf8575: False
+  - id: "hub_sensors"
+    address: 0x20
+    pcf8575: False
+
+dallas:
+  - pin: GPIO2
+    id: dallas_fast
+    update_interval: 5s
+  - pin: GPIO5
+    id: dallas_slow
+    update_interval: 60s

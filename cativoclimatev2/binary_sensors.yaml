@@ -1,0 +1,72 @@
+binary_sensor:
+
+######------------Push bottons-------------#####
+  - platform: gpio
+    pin:
+      number: GPIO0
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "Config Button"
+    on_click:
+    - min_length: 20ms
+      max_length: 400ms
+      then:
+        # Single press action: move to next page
+        - display.page.show_next: climate_display
+        - component.update: climate_display
+    - min_length: 500ms
+      max_length: 2000ms
+      then:
+        # Long press action: change select option
+        - select.next: operation_mode
+        - component.update: climate_display
+    internal: True
+
+######------------Sensors presence-------------#####
+  - platform: ble_presence
+    mac_address: A4:C1:38:80:89:FB
+    name: "${division_1} Sensor Presence"
+    device_class: connectivity
+    icon: mdi:bluetooth-connect
+    web_server:
+      sorting_group_id: sort_group_status
+  - platform: ble_presence
+    mac_address: A4:C1:38:21:29:43
+    name: "${division_2} Sensor Presence"
+    device_class: connectivity
+    icon: mdi:bluetooth-connect
+    web_server:
+      sorting_group_id: sort_group_status
+  - platform: ble_presence
+    mac_address: A4:C1:38:9D:AF:D3
+    name: "${division_3} Sensor Presence"
+    device_class: connectivity
+    icon: mdi:bluetooth-connect
+    web_server:
+      sorting_group_id: sort_group_status
+  - platform: ble_presence
+    mac_address: A4:C1:38:CC:03:7F
+    name: "${division_4} Sensor Presence"
+    device_class: connectivity
+    icon: mdi:bluetooth-connect
+    web_server:
+      sorting_group_id: sort_group_status
+
+#  - platform: homeassistant
+#    name: "Global switch state"
+#    entity_id: "{heatpump_power_id}"
+
+  - platform: gpio
+    pin:
+      pcf8574: inputs
+      number: 0
+      mode:
+        input: true
+      inverted: false
+    name: "Mixer Error"
+    id: "mixer_error"
+    device_class: problem
+    icon: mdi:alert
+    web_server:
+      sorting_group_id: sort_group_status
+      sorting_weight: -1

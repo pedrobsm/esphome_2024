@@ -1,0 +1,116 @@
+script:
+  - id: set_mode_heat
+    mode: single # Avoids infinite loop when defining mode
+    then:
+      - script.stop: set_mode_cool
+      - delay: 3s
+      - climate.control:
+          id: ${division_id_1}_temperature_control
+          mode: HEAT
+      - climate.control:
+          id: ${division_id_2}_temperature_control
+          mode: HEAT
+      - climate.control:
+          id: ${division_id_3}_temperature_control
+          mode: HEAT
+      - climate.control:
+          id: ${division_id_4}_temperature_control
+          mode: HEAT
+      - switch.turn_off: ${name}_heat_pump_switch
+      - delay: 3s
+      - switch.turn_off: ${name}_heat_pump_cooling_mode
+  - id: set_mode_cool
+    mode: single
+    then:
+      - script.stop: set_mode_heat
+      - delay: 3s
+      - climate.control:
+          id: ${division_id_1}_temperature_control
+          mode: COOL
+      - climate.control:
+          id: ${division_id_2}_temperature_control
+          mode: COOL
+      - climate.control:
+          id: ${division_id_3}_temperature_control
+          mode: COOL
+      - climate.control:
+          id: ${division_id_4}_temperature_control
+          mode: COOL
+      - switch.turn_off: ${name}_heat_pump_switch
+      - delay: 3s
+      - switch.turn_on: ${name}_heat_pump_cooling_mode
+  - id: start_heat_pump
+    mode: single
+    then:
+      - script.stop: stop_heat_pump
+      - script.wait: set_mode_heat
+      - script.wait: set_mode_cool
+      - if:
+          condition: 
+            lambda: "return id(${name}_heat_pump_power).state == false;"
+          then:
+            - switch.turn_on: ${name}_heat_pump_power
+      - delay: 30s
+      - if: #Checks if any thermostat is still ON
+          condition:
+            lambda: "return id(any_thermostat_on).state == true;"
+          then:
+            - switch.turn_on: ${name}_heat_pump_switch
+  - id: stop_heat_pump
+    mode: single
+    then:
+      - script.stop: start_heat_pump
+      - delay: 30s
+      - if: #Checks if all thermostats are OFF
+          condition:
+            lambda: "return id(any_thermostat_on).state == false;"
+          then:
+            - switch.turn_off: ${name}_heat_pump_switch
+  ################# THESE SCRIPTS BELLOW COULD BE SUBSTITUTED BY A POWER SUPPLY OUTPUT BUT CAN LOOSE A BIT OF VISIBILITY ON HASS?
+  - id: start_circulator
+    mode: single
+    then:
+      - script.wait: stop_circulator
+      - delay: 2s
+      - if: #Checks if all thermostats are OFF
+          condition:
+            lambda: "return id(any_thermostat_on).state == true;"
+          then:
+            - switch.turn_on: ${name}_climate_circulator
+  - id: stop_circulator
+    mode: single
+    then:
+      - script.wait: start_circulator
+      - delay: 2s
+      #--- This does not check anything for saving the circulator
+      - switch.turn_off: ${name}_climate_circulator
+
+  - id: get_heat_pump_status
+    mode: single
+    then:
+      - lambda: |-
+          HTTPClient http;
+          http.begin("http://192.168.33.95/status/");
+          int httpCode = http.GET();
+          float power = NAN;
+          bool is_on = NAN;
+          bool is_run = NAN;
+          if (httpCode == 200) {
+            StaticJsonDocument<2048> doc;
+            DeserializationError error = deserializeJson(doc, http.getStream());
+            if (!error && doc["meters"][0].containsKey("power")) {
+              is_on = doc["relays"][0]["ison"];
+              power = doc["meters"][0]["power"];  //// TO DELETE
+              if (doc["meters"][0]["is_valid"]){
+                if (power > 100.0 ){
+                  is_run = true;
+                }else{
+                  is_run = false;
+                }
+              }
+            }
+          }
+          http.end();
+          id(${name}_heat_pump_has_power).publish_state(is_on);
+          id(${name}_heat_pump_is_running).publish_state(is_run);
+

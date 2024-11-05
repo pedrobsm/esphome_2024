@@ -1,0 +1,155 @@
+climate:
+  # - platform: thermostat
+  #   <<: !include
+  #     file: climate_common.yaml
+  #     vars:
+  #       nr: "1"
+  # - platform: thermostat
+  #   <<: !include
+  #     file: climate_common.yaml
+  #     vars:
+  #       nr: "2"
+  # - platform: thermostat
+  #   <<: !include
+  #     file: climate_common.yaml
+  #     vars:
+  #       nr: "3"
+  # - platform: thermostat
+  #   <<: !include
+  #     file: climate_common.yaml
+  #     vars:
+  #       nr: "4"
+  ###--------- PID thermostats --------------
+  - <<: !include
+      file: climate_pid_common.yaml
+      vars:
+        nr: 1
+        kp: 1.0
+        ki: 0.0001
+        kd: 0
+  - <<: !include
+      file: climate_pid_common.yaml
+      vars:
+        nr: 2
+        kp: 1.6
+        ki: 0.0001
+        kd: 0
+  - <<: !include
+      file: climate_pid_common.yaml
+      vars:
+        nr: 3
+        kp: 1.6
+        ki: 0.0001
+        kd: 0
+  - <<: !include
+      file: climate_pid_common.yaml
+      vars:
+        nr: 4
+        kp: 3
+        ki: 0.0001
+        kd: 400
+
+        # COMENTADO EM FEB24 PARA ALIVIAR SOLUÇAO TEMPORARIA
+# select:
+#   - platform: template
+#     name: "PID Setup Division"
+#     id: PID_setup_division
+#     options:
+#       - "${division_id_1}_temperature_control"
+#       - "${division_id_2}_temperature_control"
+#       - "${division_id_3}_temperature_control"
+#       - "${division_id_4}_temperature_control"
+#     initial_option: "${division_id_1}_temperature_control"
+#     optimistic: True
+#     on_value:
+#       then:
+#         - lambda: |-
+#             int select_name = (int) id(PID_setup_division).active_index().value();
+#             float kp = 0.0;
+#             float ki = 0.0;
+#             float kd = 0.0;
+#             switch(select_name)
+#             {
+#               case 0:
+#                 kp = id(${division_id_1}_temperature_control).get_kp();
+#                 ki = id(${division_id_1}_temperature_control).get_ki();
+#                 kd = id(${division_id_1}_temperature_control).get_kd();
+#                 break;
+#               case 1:
+#                 kp = id(${division_id_2}_temperature_control).get_kp();
+#                 ki = id(${division_id_2}_temperature_control).get_ki();
+#                 kd = id(${division_id_2}_temperature_control).get_kd();
+#                 break;
+#               case 2:
+#                 kp = id(${division_id_3}_temperature_control).get_kp();
+#                 ki = id(${division_id_3}_temperature_control).get_ki();
+#                 kd = id(${division_id_3}_temperature_control).get_kd();
+#                 break;
+#               case 3:
+#                 kp = id(${division_id_4}_temperature_control).get_kp();
+#                 ki = id(${division_id_4}_temperature_control).get_ki();
+#                 kd = id(${division_id_4}_temperature_control).get_kd();
+#                 break;
+#             };
+#             id(PID_setup_kp).publish_state(kp);
+#             id(PID_setup_ki).publish_state(ki);
+#             id(PID_setup_kd).publish_state(kd);
+
+# number:
+#   - platform: template
+#     name: "PID Setup Kp"
+#     id: PID_setup_kp
+#     optimistic: true
+#     min_value: 0
+#     max_value: 100
+#     initial_value: 2
+#     step: 0.1
+#   - platform: template
+#     name: "PID Setup Ki"
+#     id: PID_setup_ki
+#     optimistic: true
+#     min_value: 0
+#     max_value: 100
+#     initial_value: 0.2
+#     step: 0.1
+#   - platform: template
+#     name: "PID Setup Kd"
+#     id: PID_setup_kd
+#     optimistic: true
+#     min_value: 0
+#     max_value: 100
+#     initial_value: 0.1
+#     step: 0.1
+
+# button:
+#   - platform: template
+#     name: "PID Setup Parameters"
+#     on_press:
+#       - lambda: |-
+#           int select_name = (int) id(PID_setup_division).active_index().value();
+#           float kp = id(PID_setup_kp).state;
+#           float ki = id(PID_setup_ki).state;
+#           float kd = id(PID_setup_kd).state;
+#           switch(select_name)
+#           {
+#             case 0:
+#               id(${division_id_1}_temperature_control).set_kp(kp);
+#               id(${division_id_1}_temperature_control).set_kp(ki);
+#               id(${division_id_1}_temperature_control).set_kp(kd);
+#               break;
+#             case 1:
+#               id(${division_id_2}_temperature_control).set_kp(kp);
+#               id(${division_id_2}_temperature_control).set_kp(ki);
+#               id(${division_id_2}_temperature_control).set_kp(kd);
+#               break;
+#             case 2:
+#               id(${division_id_3}_temperature_control).set_kp(kp);
+#               id(${division_id_3}_temperature_control).set_kp(ki);
+#               id(${division_id_3}_temperature_control).set_kp(kd);
+#               break;
+#             case 3:
+#               id(${division_id_4}_temperature_control).set_kp(kp);
+#               id(${division_id_4}_temperature_control).set_kp(ki);
+#               id(${division_id_4}_temperature_control).set_kp(kd);
+#               break;
+#           };

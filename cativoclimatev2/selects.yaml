@@ -1,0 +1,13 @@
+select:
+  - platform: template
+    name: "Operation mode"
+    id: operation_mode
+    options:
+      - "Off"
+      - "Simple Thermostat"
+      - "Auto"
+    initial_option: "Off"
+    optimistic: true
+    icon: mdi:cog
+    web_server:
+      sorting_group_id: sort_group_settings

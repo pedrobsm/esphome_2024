@@ -1,0 +1,10 @@
+#pragma once
+#define USE_API
+#define USE_BINARY_SENSOR
+#define USE_CLIMATE
+#define USE_LIGHT
+#define USE_LOGGER
+#define USE_SENSOR
+#define USE_SWITCH
+#define USE_TEXT_SENSOR
+#define USE_WIFI

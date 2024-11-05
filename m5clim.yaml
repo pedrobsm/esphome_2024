@@ -1,0 +1,47 @@
+substitutions:
+
+  #### NAMES ####
+  name: m5clim
+  division_1: "Bathroom"
+  division_2: "Main Bedroom"
+  division_3: "Spare Bedroom"
+  division_4: "Living Room"
+  division_id_1: "bathroom"
+  division_id_2: "main_bedroom"
+  division_id_3: "spare_bedroom"
+  division_id_4: "living_room"
+
+  #### Thermostats Paramenters ####
+  def_temp_low: 21 °C
+  def_temp_high: 26 °C
+  def_away_temp_low: 19 °C
+  def_away_temp_high: 28 °C
+  def_deadband: 0.0 °C            #The minimum temperature differential (temperature above the set point) before calling the heating/cooling action.
+  def_overrun: 0.0 °C             # The minimum temperature differential (heat/cooling beyond the set point) before calling the idle action. Defaults to 0.5 °C.
+  def_min_idle_time: 30s
+  def_min_cooling_off_time: 30s
+  def_min_cooling_run_time: 30s
+  def_min_heating_off_time: 30s
+  def_min_heating_run_time: 30s
+  division_pwm_period: 3600s
+  division_pwm_min_power: "0.15"
+
+  #### Env Temperature sensors average parameters
+  window_size: "3"
+  send_every: "1"
+  send_first_at: "1"
+  
+<<: !include m5clim/hwsetup.yaml
+<<: !include m5clim/climate.yaml
+<<: !include m5clim/sensors.yaml
+<<: !include m5clim/relays.yaml
+<<: !include m5clim/scripts.yaml
+
+output:
+  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 1 } }
+  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 2 } }
+  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 3 } }
+  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 4 } }
+  - platform: slow_pwm
+    id: dummy_cool_pwm
+    period: 60s

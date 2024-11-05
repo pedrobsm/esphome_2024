@@ -1,0 +1,55 @@
+script:
+  - id: time_out
+    mode: restart
+    then:
+      - light.turn_on:
+          id: back_light
+          brightness: 100%
+      - delay: 10s
+      - light.turn_on:
+          id: back_light
+          brightness: 50%
+      - delay: 10s
+      - light.turn_off: back_light
+  - id: get_heat_pump_state
+    mode: single
+    then:
+      - lambda: |-
+          HTTPClient http;
+          http.begin("http://192.168.33.95/status/");
+          int httpCode = http.GET();
+          float power = NAN;
+          bool is_on = NAN;
+          bool is_run = NAN;
+          if (httpCode == 200) {
+            StaticJsonDocument<2048> doc;
+            DeserializationError error = deserializeJson(doc, http.getStream());
+            if (!error && doc["meters"][0].containsKey("power")) {
+              is_on = doc["relays"][0]["ison"];
+              power = doc["meters"][0]["power"];
+              if (doc["meters"][0]["is_valid"]){
+                if (power > 100.0 ){
+                  is_run = true;
+                }else{
+                  is_run = false;
+                }
+              }
+            }
+          }
+          http.end();
+          id(heat_pump_is_on).publish_state(is_on);
+          id(heat_pump_is_running).publish_state(is_run);
+          id(heatpump_power).publish_state(power);
+  - id: buzz
+    mode: single
+    then:
+    - output.turn_on: buzzer
+    - output.ledc.set_frequency:
+        id: buzzer
+        frequency: "440Hz"
+    - output.set_level:
+        id: buzzer
+        level: "5%"
+    - delay: 10ms
+    - output.turn_off: buzzer
+

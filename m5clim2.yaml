@@ -1,0 +1,110 @@
+#
+#                   Zone1     Zone2    Zone3    Zone4
+#                     V         V        V        V
+#            ______________________________________________
+#           /                                              \
+#           |    ______________________________________    |
+#           |   |                                      |   |
+#           |   |                                      |   |
+# Dallas Sg |   |                                      |   |
+#  Fast Vcc |   |                                      |   |
+#       GND |   |                                      |   |
+#           |   |                                      |   |
+# Dallas Sg |   |                                      |   |
+#  Slow Vcc |   |                                      |   |
+#       GND |   |                                      |   |
+#           |   |                                      |   |
+#  pcf io 4 |   |                                      |   |
+#  pcf io 5 |   |                                      |   |
+#       GND |   |______________________________________|   |
+#           |                                              |
+#           |      ########     ########    ########       |
+#           |      ########     ########    ########       |
+#           \______________________________________________/
+#                          err  ctr  12v  GND
+#                             Mixer Control
+
+substitutions:
+  name: m5clim2
+  division_1: "Bathroom"
+  division_2: "Bedroom"
+  division_3: "Office"
+  division_4: "Living Room"
+  division_5: "Kitchen"
+  division_id_1: "bathroom"
+  division_id_2: "bedroom"
+  division_id_3: "office"
+  division_id_4: "living_room"
+  division_id_5: "kitchen"
+
+  wifi_ssid: !secret wifi_ssid
+  wifi_password: !secret wifi_password
+
+  pina: GPIO17
+  pinb: GPIO16
+
+<<: !include m5clim2/hwsetup.yaml
+<<: !include m5clim2/output.yaml
+<<: !include m5clim2/sensor.yaml
+<<: !include m5clim2/binary_sensor.yaml
+<<: !include m5clim2/display.yaml
+<<: !include m5clim2/script.yaml
+
+
+
+light:
+  - id: back_light
+    platform: binary #monochromatic
+    output: backlight
+    name: "Display Backlight"
+    restore_mode: ALWAYS_ON
+
+# Use the DAC output as a light
+  # - platform: monochromatic
+  #   output: dac_output
+  #   gamma_correct: 1.4
+  #   name: "test dac"
+  #   id: mono_light
+
+switch:
+  - id: heatpump_switch
+    platform: template
+    name: "Heatpump Switch"
+    lambda: |-
+      return id(heat_pump_is_on).state; // Must be like this to not generate too many http requests
+    turn_on_action:
+      - lambda: |-
+          HTTPClient http;
+          http.begin("http://192.168.33.95/relay/0?turn=on");
+          int httpCode = http.GET();
+          bool is_on = NAN;
+          if (httpCode == 200) {
+            StaticJsonDocument<1024> doc;
+            DeserializationError error = deserializeJson(doc, http.getStream());
+            if (!error && doc.containsKey("ison")) {
+              is_on = doc["ison"];
+              }
+            }
+          http.end();
+          id(heat_pump_is_on).publish_state(is_on);
+      - delay: 1s
+      - script.execute: get_heat_pump_state
+    turn_off_action:
+      - lambda: |-
+          HTTPClient http;
+          http.begin("http://192.168.33.95/relay/0?turn=off");
+          int httpCode = http.GET();
+          bool is_on = NAN;
+          if (httpCode == 200) {
+            StaticJsonDocument<1024> doc;
+            DeserializationError error = deserializeJson(doc, http.getStream());
+            if (!error && doc.containsKey("ison")) {
+              is_on = doc["ison"];
+              }
+            }
+          http.end();
+          id(heat_pump_is_on).publish_state(is_on);
+      - delay: 1s
+      - script.execute: get_heat_pump_state
+
+

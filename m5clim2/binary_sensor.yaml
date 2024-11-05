@@ -1,0 +1,60 @@
+binary_sensor:
+###------ Buttons ------
+  - platform: gpio
+    id: M5_BtnA
+    pin:
+      number: 39
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - script.execute: buzz
+      - display.page.show_previous: m5stack_display
+      - script.execute: time_out
+  - platform: gpio
+    id: M5_BtnB
+    pin:
+      number: 38
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - script.execute: buzz
+      - script.execute: time_out
+      - output.set_level:
+          id: ${division_id_1}_led
+          level: 2%
+#      - script.execute: get_heat_pump_status
+    # on_click:
+    #   - min_length: 50ms
+    #     max_length: 350ms
+    #     then:
+    #       - script.execute: get_power_consumption
+    #   - min_length: 1s
+    #     max_length: 5s
+    #     then:
+    #       - switch.toggle: backlight
+    #       - script.execute: time_out
+  - platform: gpio
+    id: M5_BtnC
+    pin:
+      number: 37
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      - script.execute: buzz
+      - display.page.show_next: m5stack_display
+      - script.execute: time_out
+###------ HeatPump Sensors
+  - platform: template
+    id: heat_pump_is_running
+    name: Heat Pump Running
+    device_class: running
+  - platform: template
+    id: heat_pump_is_on
+    name: Heat Pump ON
+    device_class: power

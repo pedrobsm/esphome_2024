@@ -1,0 +1,16 @@
+- platform: dht
+  model: si7021
+  pin: ${pin}
+  temperature:
+    name: ${division_${nr}} Temperature"
+    id: ${division_id_${nr}}_temperature
+    filters: #Filters values by removing unusual high/low values from last 5min
+      - median:
+          window_size: 10
+          send_every: 2
+          send_first_at: 1
+    icon: mdi:home-thermometer
+  humidity:
+      name: ${division_${nr}} Humidity"
+      id: ${division_id_${nr}}_humidity
+  update_interval: 5s

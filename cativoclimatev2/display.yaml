@@ -1,0 +1,64 @@
+
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    id: climate_display
+    i2c_id: bus_b
+    address: 0x3C
+    update_interval: 2s
+    pages:
+      - id: page1
+        lambda: |-
+          it.print(0, 0, id(font_arial_12), "Page 1");
+      - id: page2
+        lambda: |-
+          it.print(0, 10, id(font_arial_20), "Page 2");
+      - id: page3
+        lambda: |-
+          it.image(0, 0, id(livingroom));
+          it.image(0, 16, id(bedroom));
+          it.image(0, 32, id(office));
+          it.image(0, 48, id(bathroom));
+          it.printf( 16, 32, id(font_arial_12), "%.1fC", id(office_temperature).state);
+
+
+image:
+  - file: mdi:exclamation-thick
+    id: alert
+    resize: 20x20
+  - file: mdi:check-bold
+    id: ok
+    resize: 20x20
+  - file: mdi:circle
+    id: power_on
+    resize: 20x20
+  - file: mdi:circle-outline
+    id: power_off
+    resize: 20x20
+  - file: mdi:pause-circle-outline
+    id: power_pause
+    resize: 20x20
+  - file: mdi:refresh
+    id: flowing
+    resize: 20x20
+#####
+  - file: mdi:bed-outline
+    id: bedroom
+    resize: 16x16
+  - file: mdi:sofa-single-outline
+    id: livingroom
+    resize: 16x16
+  - file: mdi:desk
+    id: office
+    resize: 16x16
+  - file: mdi:toilet
+    id: bathroom
+    resize: 16x16
+
+font:
+  - file: "cativoclimatev2/Arial.ttf"
+    id: font_arial_20
+    size: 20
+  - file: "cativoclimatev2/Arial.ttf"
+    id: font_arial_12
+    size: 12

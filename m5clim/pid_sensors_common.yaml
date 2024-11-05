@@ -1,0 +1,36 @@
+- platform: pid
+  name: "PID Climate Result ${division_${xr}}"
+  type: RESULT
+  climate_id: ${division_id_${xr}}_temperature_control
+- platform: pid
+  name: "PID Climate HEAT Output ${division_${xr}}"
+  type: HEAT
+  climate_id: ${division_id_${xr}}_temperature_control
+- platform: pid
+  name: "PID Climate Error ${division_${xr}}"
+  type: ERROR
+  climate_id: ${division_id_${xr}}_temperature_control
+- platform: pid
+  name: "PID Climate PROPORTIONAL ${division_${xr}}"
+  type: PROPORTIONAL
+  climate_id: ${division_id_${xr}}_temperature_control
+- platform: pid
+  name: "PID Climate INTEGRAL ${division_${xr}}"
+  type: INTEGRAL
+  climate_id: ${division_id_${xr}}_temperature_control
+- platform: pid
+  name: "PID Climate DERIVATIVE ${division_${xr}}"
+  type: DERIVATIVE
+  climate_id: ${division_id_${xr}}_temperature_control
+- platform: pid
+  name: "PID Climate KP ${division_${xr}}"
+  type: KP
+  climate_id: ${division_id_${xr}}_temperature_control
+- platform: pid
+  name: "PID Climate KI ${division_${xr}}"
+  type: KI
+  climate_id: ${division_id_${xr}}_temperature_control
+- platform: pid
+  name: "PID Climate KD ${division_${xr}}"
+  type: KD
+  climate_id: ${division_id_${xr}}_temperature_control

@@ -1,0 +1,131 @@
+substitutions:
+  name: cativoclimatev2
+  friendly_name: Cativo Climate v2
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+  project:
+    name: esphome.web
+    version: dev
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+#old    type: arduino
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+# api:
+
+# Allow Over-The-Air updates
+ota:
+- platform: esphome
+
+wifi:
+  ssid: birelesha
+  password: montecativo256
+  manual_ip:
+    static_ip: 192.168.33.194
+    gateway: 192.168.33.1
+    subnet: 255.255.255.0
+    dns1: 192.168.33.1
+
+#dashboard_import:
+#  package_import_url: github://esphome/example-configs/esphome-web/esp32.yaml@main
+#  import_full_config: true
+
+# To have a "next url" for improv serial
+web_server:
+
+
+uart:
+  - id: rs485
+    tx_pin: GPIO27
+    rx_pin: GPIO14
+    baud_rate: 9600
+  - id: rs232
+    tx_pin: GPIO17
+    rx_pin: GPIO16
+    baud_rate: 9600
+
+spi:
+  clk_pin: GPIO18
+  mosi_pin: GPIO23
+  miso_pin: GPIO19
+  # cs pin: GPIO5
+
+i2c:
+  sda: GPIO4
+  scl:
+    number: GPIO15
+    ignore_strapping_warning: true
+
+pcf8574:
+  - id: inputs
+    address: 0x22
+  - id: outputs
+    address: 0x24
+
+time:
+  - platform: ds1307
+    id: rtc_time
+
+
+switch:
+  - platform: gpio
+    name: "KC868-A6-RELAY-1"
+    id: relay_1
+    pin:
+      pcf8574: outputs
+      number: 0
+      mode: OUTPUT
+      inverted: true
+  - platform: gpio
+    name: "KC868-A6-RELAY-2"
+    id: relay_2
+    pin:
+      pcf8574: outputs
+      number: 1
+      mode: OUTPUT
+      inverted: true
+
+esp32_ble_tracker:
+  scan_parameters:
+    active: True
+
+sensor:
+  - platform: pvvx_mithermometer
+    mac_address: A4:C1:38:80:89:FB
+    temperature:
+      name: Room Temperature
+      id: room_temperature
+      accuracy_decimals: 2
+    humidity:
+      name: Room Humidity
+    battery_level:
+      name: Room Sensor Battery
+
+climate:
+  - platform: thermostat
+    name: "Radiant Floor Heating"
+    sensor: room_temperature
+    id: radiant_floor_climate
+    min_idle_time: 10s
+    min_heating_off_time: 30s
+    min_heating_run_time: 60s
+    visual:
+      min_temperature: 18
+      max_temperature: 25
+      temperature_step: 0.1
+      min_humidity: 30%
+      max_humidity: 99%
+    heat_action:
+      - switch.turn_on: relay_1
+    idle_action:
+      - switch.turn_off: relay_1

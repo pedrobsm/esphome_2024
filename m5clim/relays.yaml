@@ -1,0 +1,118 @@
+---
+#------------------------------- RELLAY outputs ------------------------
+switch:
+  - id: ${name}_${division_id_1}_thermostat
+    platform: gpio
+    name: "${division_1} Thermostat"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: hub_relays
+      number: 0
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_${division_id_2}_thermostat
+    platform: gpio
+    name: "${division_2} Thermostat"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: hub_relays
+      number: 1
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_${division_id_3}_thermostat
+    platform: gpio
+    name: "${division_3} Thermostat"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: hub_relays
+      number: 2
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_${division_id_4}_thermostat
+    platform: gpio
+    name: "${division_4} Thermostat"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: hub_relays
+      number: 3
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_heat_pump_switch
+    platform: gpio
+    name: "Heat Pump Switch"
+    restore_mode: ALWAYS_OFF #Protects from reset
+    pin:
+      pcf8574: hub_relays
+      number: 4
+      mode: OUTPUT
+      inverted: True
+    device_class: switch
+  - id: ${name}_heat_pump_cooling_mode
+    platform: gpio
+    name: "Heat Pump Cooling Mode"
+    restore_mode: RESTORE_DEFAULT_OFF
+    pin:
+      pcf8574: hub_relays
+      number: 5
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_climate_circulator
+    platform: gpio
+    name: "Climate Water Circulator"
+    restore_mode: ALWAYS_OFF #Protects from reset
+    pin:
+      pcf8574: hub_relays
+      number: 6
+      mode: OUTPUT
+      inverted: True
+  - id: ${name}_heat_pump_power
+    platform: template
+    name: "Heatpump Power"
+    device_class: outlet
+    lambda: |-
+      return id(${name}_heat_pump_has_power).state; // Must be like this to not generate too many http requests
+    turn_on_action:
+      - http_request.post:
+          url: http://192.168.33.95/relay/0?turn=on
+          capture_response: true
+          on_response:
+            then:
+              - lambda: |-
+                  json::parse_json(body, [](JsonObject root) -> bool {
+                      id(${name}_heat_pump_has_power).publish_state(root["ison"]);
+                      return true;
+                  });
+      - delay: 1s
+      - script.execute: get_heat_pump_status
+#      - lambda: |-
+#          HTTPClient http;
+#          http.begin("http://192.168.33.95/relay/0?turn=on");
+#          int httpCode = http.GET();
+#          bool is_on = NAN;
+#          if (httpCode == 200) {
+#            StaticJsonDocument<1024> doc;
+#            DeserializationError error = deserializeJson(doc, http.getStream());
+#            if (!error && doc.containsKey("ison")) {
+#              is_on = doc["ison"];
+#              }
+#            }
+#          http.end();
+#          id(${name}_heat_pump_has_power).publish_state(is_on);
+#      - delay: 1s
+#      - script.execute: get_heat_pump_status
+    turn_off_action:
+      - http_request.post:
+          url: http://192.168.33.95/relay/0?turn=on
+          capture_response: true
+          on_response:
+            then:
+              - lambda: |-
+                  json::parse_json(body, [](JsonObject root) -> bool {
+                      id(${name}_heat_pump_has_power).publish_state(root["ison"]);
+                      return true;
+                  });
+      - delay: 1s
+      - script.execute: get_heat_pump_status
+
+  - platform: restart
+    name: "${name}_restart"

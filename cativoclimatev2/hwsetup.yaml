@@ -1,0 +1,84 @@
+### Free pins:
+# 2  - SPI_DIO0 - 10k pull-down Resistor 
+# 5  - SPI_CS - 10k pull-up Resistor
+# 18 - SPI_CLK
+# 19 - SPI_MISO
+# 21 - SPI_RS - 10k pull-up Resistor
+# 22 - CE_S - 10k pull-up Resistor
+# 23 - SPI_MOSI
+# 12 - Header 17 - Cannot be pulled high for boot
+# 13 - Header 17
+
+esphome:
+  name: ${name}
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+#uart:
+#  - id: rs485
+#    tx_pin: GPIO27
+#    rx_pin: GPIO14
+#    baud_rate: 9600
+#  - id: rs232
+#    tx_pin: GPIO17
+#    rx_pin: GPIO16
+#    baud_rate: 9600
+
+#spi:
+#  clk_pin: GPIO18
+#  mosi_pin: GPIO23
+#  miso_pin: GPIO19
+#  # cs pin: GPIO5
+
+i2c:
+  - id: bus_a
+    sda: GPIO4
+    scl:
+      number: GPIO15
+      ignore_strapping_warning: true
+    scan: false
+  - id: bus_b
+    sda: GPIO19
+    scl: GPIO18
+    scan: false
+    frequency: 400kHz # needed to solve display response time issues. default is 100kHz
+
+pcf8574:
+  - id: inputs
+    i2c_id: bus_a
+    address: 0x22
+  - id: outputs
+    i2c_id: bus_a
+    address: 0x24
+
+time:
+  - platform: ds1307
+    id: rtc_time
+    i2c_id: bus_a
+
+esp32_ble_tracker:
+  id: ble_tracker
+  scan_parameters:
+    active: false
+    continuous: true
+
+one_wire:
+  - platform: gpio
+    pin: GPIO32
+    id: dallas_1
+  - platform: gpio
+    pin: GPIO33
+    id: dallas_2
+#  - platform: gpio
+#    pin: GPIO21 #PIN SPI_RST with a 10k pull-up Resistor
+#    id: dallas_3
+#  - platform: gpio
+#    pin: GPIO22 #PIN CE_S with a 10k pull-up Resistor
+#    id: dallas_4
+#  - platform: gpio
+#    pin: GPIO5 #PIN SPI_CS with a 10k pull-up Resistor
+#    id: dallas_5
+

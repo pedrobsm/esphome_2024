@@ -1,0 +1,97 @@
+display:
+    - platform: ili9341
+      id: m5stack_display
+      model: M5Stack
+      cs_pin: 14
+      dc_pin: 27
+      led_pin: 32
+      reset_pin: 33
+      rotation: 0
+      # lambda: |-
+      #   it.rectangle(0,  0, it.get_width(), it.get_height(), LINES_IDLE);
+      #   it.rectangle(0, 22, it.get_width(), it.get_height(), LINES_IDLE);   // header bar
+      #   it.print(it.get_width() / 2, 11, id(font_roboto_medium22), HIGHLIGHT_ERR, TextAlign::CENTER, "Particulate matter");
+      #   it.print(11,  33, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM1");
+      #   it.print(11,  55, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM2.5");
+      #   it.print(11,  77, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM10");
+      pages:
+        - id: g_page
+          lambda: |-
+            it.rectangle(0,  0, it.get_width(), it.get_height(), LINES_IDLE);
+            it.rectangle(0, 22, it.get_width(), it.get_height(), LINES_IDLE);   // header bar
+            it.print(it.get_width() / 2, 11, id(font_roboto_medium22), HIGHLIGHT_ERR, TextAlign::CENTER, "Particulate matter");
+            it.print(11,  33, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM1");
+            it.print(11,  55, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM2.5");
+            it.print(11,  77, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM10");
+        - id: z1_page
+          lambda: |-
+            it.rectangle(0,  23, it.get_width(), it.get_height()-24, LINES_IDLE);
+            
+            it.rectangle(2, 0, 50, 24, LINES_IDLE);   // header bar
+            it.rectangle(55, 0, 50, 24, LINES_IDLE);   // header bar
+            it.rectangle(108, 0, 50, 24, LINES_IDLE);   // header bar
+            it.rectangle(161, 0, 50, 24, LINES_IDLE);
+            it.rectangle(214, 0, 50, 24, LINES_IDLE);
+            it.rectangle(267, 0, 50, 24, LINES_IDLE);
+            it.filled_rectangle(2, 0, 50, 24, LINES_IDLE);   // header bar
+  
+            it.print(4, 0, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Gnrl");
+            it.print(57, 0, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Bath");
+            it.print(110, 0, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Bed");
+            it.print(163, 0, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Offi");
+            it.print(216, 0, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Livn");
+            it.print(269, 0, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Sett");
+        
+            it.print(11,  33, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM1");
+            it.print(11,  55, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM2.5");
+            it.print(11,  77, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "PM10");
+        - id: z2_page
+          lambda: |-
+            it.rectangle(0,  23, it.get_width(), it.get_height()-24, LINES_IDLE);
+            
+            it.filled_rectangle(5, 24, 100, 100, LINES_IDLE);
+            it.filled_rectangle(110, 24, 100, 100, LINES_IDLE);
+            it.filled_rectangle(215, 24, 100, 100, YELLOW);
+            it.filled_rectangle(5, 134, 100, 100, LINES_IDLE);
+            it.filled_rectangle(110, 134, 100, 100, LINES_IDLE);
+            it.filled_rectangle(215, 134, 100, 100, YELLOW);
+  
+            it.print(7, 136, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Gnrl");
+            it.print(7, 26, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Bath");
+            it.print(112, 26, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Bed");
+            it.print(7, 136, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Offi");
+            it.print(112, 136, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Livn");
+            it.print(217, 136, id(font_roboto_medium22), BODY_TEXT, TextAlign::LEFT, "Sett");
+       
+        - id: z3_page
+          lambda: |-
+            it.printf(0, 60, id(font_roboto_medium22), "%.1f W", id(heatpump_power).state);
+
+# Download Roboto font from https://fonts.google.com/specimen/Roboto
+font:
+    - file: "fonts/Roboto-Medium.ttf"
+      id: font_roboto_medium22
+      size: 22
+      glyphs: '!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz/³µ'
+  
+color:
+  - id: HIGHLIGHT_ERR
+    red: 90%
+    green: 5%
+    blue: 5%
+  - id: HIGHLIGHT_OK
+    red: 5%
+    green: 80%
+    blue: 5%
+  - id: LINES_IDLE
+    red: 5%
+    green: 5%
+    blue: 80%
+  - id: BODY_TEXT
+    red: 80%
+    green: 80%
+    blue: 80%
+  - id: YELLOW
+    red: 80%
+    green: 80%
+    blue: 5%

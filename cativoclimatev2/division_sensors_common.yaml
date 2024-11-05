@@ -1,0 +1,27 @@
+---
+#- platform: xiaomi_lywsd03mmc
+- platform: pvvx_mithermometer
+  mac_address: ${mac}
+#  bindkey: ${bkey}
+  temperature:
+    name: ${division_${nr}} Temperature
+    id: ${division_id_${nr}}_temperature
+    accuracy_decimals: 1
+    filters:
+      - sliding_window_moving_average:
+          window_size: ${window_size}
+          send_every: ${send_every}
+          send_first_at: ${send_first_at}
+    icon: mdi:home-thermometer
+    web_server:
+      sorting_group_id: sort_group_temperature_sensors
+      sorting_weight: ${nr}
+  humidity:
+    name: ${division_${nr}} Humidity
+    icon: mdi:water-percent
+    web_server:
+      sorting_group_id: sort_group_temperature_sensors
+      sorting_weight: ${nr}
+  battery_level:
+    name: ${division_${nr}} Sensor Battery
+    icon: mdi:battery-50-bluetooth

@@ -1,0 +1,122 @@
+sensor:
+  - <<: !include
+      file: zone_sensor_common.yaml
+      vars:
+        nr: 1
+        pin: 1
+  - <<: !include
+      file: zone_sensor_common.yaml
+      vars:
+        nr: 2
+        pin: 3
+  - <<: !include
+      file: zone_sensor_common.yaml
+      vars:
+        nr: 3
+        pin: 17
+  - <<: !include
+      file: zone_sensor_common.yaml
+      vars:
+        nr: 4
+        pin: 16
+
+
+  - platform: template
+    id: heatpump_power
+    name: Heat Pump Power Consumption
+    internal: False      #################### turn to internal ###
+    update_interval: 5s # THIS IS THE schedule for the heap pump status update
+    lambda: |-
+        id(get_heat_pump_state).execute();
+        return {}; // Does not publish new state. Leaves this to the script
+    on_value:
+    - if:
+        condition:
+          display.is_displaying_page:
+            id: m5stack_display
+            page_id: z3_page
+        then:
+            - component.update: m5stack_display
+
+    # - platform: dht
+    #   model: si7021
+    #   pin: ${pinb}
+    #   temperature:
+    #       name: "Test Temperature B"
+    #       id: test_temperature_b
+    #       filters: #Filters values by removing unusual high/low values from last 5min
+    #       - median:
+    #           window_size: 10
+    #           send_every: 2
+    #           send_first_at: 1
+    #       icon: mdi:home-thermometer
+    #   humidity:
+    #       name: "Test Humidity B"
+    #       id: test_humidity_b
+    #   update_interval: 5s
+
+  - platform: dallas
+    address: 0xef3c7d0457867428 #8
+    name: "${name} Water Inlet Temperature"
+    id: "${name}_water_inlet_temp"
+    dallas_id: dallas_fast
+    icon: mdi:thermometer-water
+    # internal: True #It is shown on Climate
+  - platform: dallas
+    address: 0x863cf70457d39e28 #9
+    name: "${name} Water Source Temperature"
+    id: "${name}_water_source_temp"
+    dallas_id: dallas_fast
+    icon: mdi:thermometer-water
+  - platform: dallas
+    address: 0x580300A2793F1928 #3
+    name: "${name} Water Return Temperature"
+    id: "${name}_water_return_temp"
+    dallas_id: dallas_slow
+    icon: mdi:thermometer-water
+
+  - platform: uptime
+    name: "${name} Uptime Seconds"
+    id: ${name}_uptime_seconds
+    update_interval: 30s
+    disabled_by_default: True
+
+  - platform: debug
+    free:
+      name: "Heap Free"
+    block:
+      name: "Heap Max Block"
+    loop_time:
+      name: "Loop Time"
+
+text_sensor:
+  - platform: template
+    name: "${name} Uptime"
+    id: ${name}_uptime_human
+    lambda: |-
+      uint32_t dur = id(${name}_uptime_seconds).state;
+      int dys = 0;
+      int hrs = 0;
+      int mnts = 0;
+      if (dur > 86399) {
+        dys = trunc(dur / 86400);
+        dur = dur - (dys * 86400);
+      }
+      if (dur > 3599) {
+        hrs = trunc(dur / 3600);
+        dur = dur - (hrs * 3600);
+      }
+      if (dur > 59) {
+        mnts = trunc(dur / 60);
+        dur = dur - (mnts * 60);
+      }
+      char buffer[17];
+      sprintf(buffer, "%ud %02uh %02um %02us", dys, hrs, mnts, dur);
+      return {buffer};
+    icon: mdi:clock-start
+    update_interval: 30s
+    on_value:
+      then:
+        - logger.log:
+            format: "------------ Uptime is %s -------------"
+            args: ["id(${name}_uptime_human).state.c_str()"]

@@ -1,0 +1,78 @@
+sensor:
+  - platform: uptime
+    type: timestamp
+    name: Last Boot
+  - <<: !include
+      file: division_sensors_common.yaml
+      vars:
+        nr: 1
+        mac: "A4:C1:38:80:89:FB"
+        bkey: "bd5f878afe292291fc3d4f91880bcf22"
+  - <<: !include
+      file: division_sensors_common.yaml
+      vars:
+        nr: 2
+        mac: "A4:C1:38:21:29:43"
+        bkey: "3e4941bbecfc2bfddad439edb0249259"
+  - <<: !include
+      file: division_sensors_common.yaml
+      vars:
+        nr: 3
+        mac: "A4:C1:38:9D:AF:D3"
+        bkey: "ec082232e57ee4ad93941991544e0db4"
+  - <<: !include
+      file: division_sensors_common.yaml
+      vars:
+        nr: 4
+        mac: "A4:C1:38:CC:03:7F"
+        bkey: "9ff16fda831f9158ecd2f402f4a0913b"
+
+  - platform: dallas_temp
+    address: 0x863cf70457d39e28 #9
+    name: "Water Source Temperature"
+    id: "water_source_temp"
+    one_wire_id: dallas_1
+    icon: mdi:thermometer-water
+    web_server:
+      sorting_group_id: sort_group_water_circuit
+      sorting_weight: 20
+  - platform: dallas_temp
+    address: 0xef3c7d0457867428 #8
+    name: "Water Mixed Temperature"
+    id: "water_mixed_temp"
+    one_wire_id: dallas_1
+    icon: mdi:thermometer-water
+    web_server:
+      sorting_group_id: sort_group_water_circuit
+      sorting_weight: 30
+    # internal: True #It is shown on Climate
+  - platform: dallas_temp
+    address: 0x5101193808681428
+    name: "Water Inlet Temperature"
+    id: "water_inlet_temp"
+    one_wire_id: dallas_1
+    icon: mdi:thermometer-water
+    web_server:
+      sorting_group_id: sort_group_water_circuit
+      sorting_weight: 40
+  - platform: dallas_temp
+    address: 0x9D011937F7E71028
+    name: "Water Outlet Temperature"
+    id: "water_outlet_temp"
+    one_wire_id: dallas_1
+    icon: mdi:thermometer-water
+    web_server:
+      sorting_group_id: sort_group_water_circuit
+      sorting_weight: 50
+
+
+  - platform: template
+    name: "Mixer position"
+    id: mixer_position
+    lambda: |-
+      return id(mixer_output_level) * 100;  // Display as a percentage
+    update_interval: 300s
+    icon: mdi:gauge
+    web_server:
+      sorting_group_id: sort_group_water_circuit
+      sorting_weight: 70

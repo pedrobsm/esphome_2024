@@ -1,0 +1,23 @@
+# GPIO pin of the display backlight
+output:
+  - id: backlight
+    platform: gpio #ledc
+    pin: 32
+  # - platform: esp32_dac
+  #   pin: GPIO25
+  #   id: dac_output
+# Configure the output
+  - platform: ledc
+    pin: GPIO25
+    id: buzzer
+### Output Led
+  - platform: slow_pwm
+    pin:
+        pcf8574: hub_sensors
+        number: 0
+        # One of INPUT or OUTPUT
+        mode:
+            output: true
+        inverted: false
+    id: ${division_id_1}_led
+    period: 5s

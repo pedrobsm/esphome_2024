@@ -1,0 +1,56 @@
+### SETUP
+name: ${division_${nr}} Temperature Control
+id: ${division_id_${nr}}_temperature_control
+sensor: ${division_id_${nr}}_temperature
+### PRESETS
+preset:
+  - name: home
+    default_target_temperature_low: ${def_temp_low}
+    default_target_temperature_high: ${def_temp_high}
+    mode: heat
+  - name: away
+    default_target_temperature_low: ${def_away_temp_low}
+    default_target_temperature_high: ${def_away_temp_high}
+    mode: heat
+  - name: "home cool"
+    default_target_temperature_low: ${def_temp_low}
+    default_target_temperature_high: ${def_temp_high}
+    mode: cool
+  - name: "away cool"
+    default_target_temperature_low: ${def_away_temp_low}
+    default_target_temperature_high: ${def_away_temp_high}
+    mode: cool
+### Tunning parameters
+default_preset: home
+heat_deadband: ${def_deadband}
+heat_overrun: ${def_overrun}
+cool_deadband: ${def_deadband}
+cool_overrun: ${def_overrun}
+min_idle_time: ${def_min_idle_time}
+min_cooling_off_time: ${def_min_cooling_off_time}
+min_cooling_run_time: ${def_min_cooling_run_time}
+min_heating_off_time: ${def_min_heating_off_time}
+min_heating_run_time: ${def_min_heating_run_time}
+### ACTIONS
+off_mode:
+  - switch.turn_off: ${name}_${division_id_${nr}}_thermostat
+heat_mode:
+  - script.execute: set_mode_heat
+cool_mode:
+  - script.execute: set_mode_cool
+auto_mode:
+  - script.execute: set_mode_heat
+cool_action:
+  - script.wait: set_mode_cool
+  - switch.turn_on: ${name}_${division_id_${nr}}_thermostat
+heat_action:
+  - script.wait: set_mode_heat
+  - switch.turn_on: ${name}_${division_id_${nr}}_thermostat
+  # - lambda: |-
+  #     float out = 0.0;
+  #     out = (${name}_${division_id_${nr}}_thermostat.target_temperature_low - ${division_id_${nr}}_temperature.state) * id(PID_setup_kp).state
+  #     id(${name}_${division_id_${nr}}_pwm_control).set_level(out);
+idle_action:
+  - switch.turn_off: ${name}_${division_id_${nr}}_thermostat
+  # - lambda: |-
+  #     id(${name}_${division_id_${nr}}_pwm_control).set_level(division_pwm_min_power);
