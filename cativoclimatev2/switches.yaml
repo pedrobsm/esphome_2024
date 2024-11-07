@@ -8,6 +8,9 @@ switch:
       number: 0
       mode: OUTPUT
       inverted: True
+    icon: mdi:heating-coil
+    web_server:
+      sorting_group_id: sort_group_valves
   - id: ${name}_${division_id_2}_thermostat
     platform: gpio
     name: "${division_2} Thermostat"
@@ -17,6 +20,9 @@ switch:
       number: 1
       mode: OUTPUT
       inverted: True
+    icon: mdi:heating-coil
+    web_server:
+      sorting_group_id: sort_group_valves
   - id: ${name}_${division_id_3}_thermostat
     platform: gpio
     name: "${division_3} Thermostat"
@@ -26,6 +32,9 @@ switch:
       number: 2
       mode: OUTPUT
       inverted: True
+    icon: mdi:heating-coil
+    web_server:
+      sorting_group_id: sort_group_valves
   - id: ${name}_${division_id_4}_thermostat
     platform: gpio
     name: "${division_4} Thermostat"
@@ -35,6 +44,9 @@ switch:
       number: 3
       mode: OUTPUT
       inverted: True
+    icon: mdi:heating-coil
+    web_server:
+      sorting_group_id: sort_group_valves
   - id: ${name}_heat_pump_switch
     platform: gpio
     name: "Heat Pump Switch"
@@ -45,15 +57,21 @@ switch:
       mode: OUTPUT
       inverted: True
     device_class: switch
-  - id: ${name}_water_circulator
+    icon: mdi:heat-pump
+    web_server:
+      sorting_group_id: sort_group_thermostats
+  - id: ${name}_heat_pump_cooling_mode
     platform: gpio
-    name: "Water Circulator"
-    restore_mode: ALWAYS_OFF #Protects from reset
+    name: "Heat Pump Cooling Mode"
+    restore_mode: RESTORE_DEFAULT_OFF
     pin:
       pcf8574: outputs
       number: 5
       mode: OUTPUT
       inverted: True
+    icon: mdi:sun-snowflake
+    web_server:
+      sorting_group_id: sort_group_thermostats
 
   - platform: restart
     name: "${name}_restart"

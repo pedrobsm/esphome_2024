@@ -52,10 +52,6 @@ binary_sensor:
     web_server:
       sorting_group_id: sort_group_status
 
-#  - platform: homeassistant
-#    name: "Global switch state"
-#    entity_id: "{heatpump_power_id}"
-
   - platform: gpio
     pin:
       pcf8574: inputs
@@ -69,4 +65,39 @@ binary_sensor:
     icon: mdi:alert
     web_server:
       sorting_group_id: sort_group_status
-      sorting_weight: -1
+      sorting_weight: 5
+
+  - platform: gpio
+    pin:
+      pcf8574: inputs
+      number: 1
+      mode:
+        input: true
+      inverted: false
+    name: "Water circulator is ON"
+    id: "water_circulator_on"
+    device_class: running
+    icon: mdi:pump
+    web_server:
+      sorting_group_id: sort_group_water_circuit
+      sorting_weight: 11
+
+    #------------------------------ Control if at least one of the thermostats is ON to keep heatpump ON ----------
+  - platform: template
+    name: "Thermostats're ON"
+    id: any_thermostat_on
+    condition:
+      or:
+        - switch.is_on: "${name}_${division_id_1}_thermostat"
+        - switch.is_on: "${name}_${division_id_2}_thermostat"
+        - switch.is_on: "${name}_${division_id_3}_thermostat"
+        - switch.is_on: "${name}_${division_id_4}_thermostat"
+    device_class: running
+    icon: mdi:pipe-valve
+    web_server:
+      sorting_group_id: sort_group_water_circuit
+      sorting_weight: 10
+      
+#  - platform: homeassistant
+#    name: "Global switch state"
+#    entity_id: "{heatpump_power_id}"

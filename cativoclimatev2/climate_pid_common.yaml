@@ -1,0 +1,28 @@
+- platform: pid
+  ### SETUP
+  # name: ${division_${nr}} PID Control
+  # id: ${division_id_${nr}}_pid_control
+  name: ${division_${nr}} Temperature Control
+  id: ${division_id_${nr}}_temperature_control
+  sensor: ${division_id_${nr}}_temperature
+  default_target_temperature: ${def_temp_low}
+  heat_output: ${name}_${division_id_${nr}}_pwm_control
+  cool_output: dummy_cool_pwm
+  control_parameters:
+    kp: ${kp}
+    ki: ${ki}
+    kd: ${kd}
+    min_integral: -0.1
+    max_integral: 0.5
+    output_averaging_samples: 2 # smooth the output over 5 samples
+    derivative_averaging_samples: 3 # smooth the derivative value over 10 samples
+
+  ### Tunning parameters
+  deadband_parameters:
+    threshold_high: 0.1°C #### Deve ser 0,1 e -0,1??????
+    threshold_low: -0.1°C
+    deadband_output_averaging_samples: 5
+  icon: mdi:thermostat
+  web_server:
+    sorting_group_id: sort_group_temperature_sensors
+    sorting_weight: ${nr}

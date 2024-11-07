@@ -1,6 +1,6 @@
 substitutions:
   name: cativoclimatev2
-  friendly_name: Cativo Climate
+  friendly_name: Cativo Thermostat
 
   division_1: "Bathroom"
   division_2: "Bedroom"
@@ -10,6 +10,34 @@ substitutions:
   division_id_2: "bedroom"
   division_id_3: "office"
   division_id_4: "livingroom"
+
+  #### Thermostats Paramenters ####
+  # The default low temperature threshold. If the temperature drops below this value, the heating system will be activated.
+  def_temp_low: 21 °C
+  # The default high temperature threshold. If the temperature rises above this value, the cooling system will be activated.
+  def_temp_high: 26 °C
+  # The low temperature threshold when the system is in 'away' mode. This is typically set lower than the default low temperature to save energy when no one is home.
+  def_away_temp_low: 19 °C
+  # The high temperature threshold when the system is in 'away' mode. This is typically set higher than the default high temperature to save energy when no one is home.
+  def_away_temp_high: 28 °C
+  # The minimum temperature differential (temperature above the set point) before calling the heating/cooling action. This prevents the system from constantly turning on and off in response to minor temperature fluctuations.
+  def_deadband: 0.0 °C
+  # The minimum temperature differential (heat/cooling beyond the set point) before calling the idle action. This allows the system to 'overrun' a bit to prevent frequent cycling between heating/cooling and idle. Defaults to 0.5 °C.
+  def_overrun: 0.0 °C
+  # The minimum amount of time the system will stay idle before it can be activated again. This prevents rapid cycling of the system.
+  def_min_idle_time: 30s
+  # The minimum amount of time the cooling system will stay off before it can be activated again. This prevents rapid cycling of the cooling system.
+  def_min_cooling_off_time: 30s
+  # The minimum amount of time the cooling system will run once activated. This ensures that the cooling system runs for a sufficient amount of time to effectively cool the space.
+  def_min_cooling_run_time: 30s
+  # The minimum amount of time the heating system will stay off before it can be activated again. This prevents rapid cycling of the heating system.
+  def_min_heating_off_time: 30s
+  # The minimum amount of time the heating system will run once activated. This ensures that the heating system runs for a sufficient amount of time to effectively heat the space.
+  def_min_heating_run_time: 30s
+  # The period of the PWM (Pulse Width Modulation) signal. This is the total time for one cycle of the PWM signal, which is used to control the power to the heating/cooling system.
+  division_pwm_period: 3600s
+  # The minimum power level of the PWM signal. This is the minimum duty cycle of the PWM signal, which determines the minimum power level of the heating/cooling system.
+  division_pwm_min_power: "0.15"
 
   #### Env Temperature sensors average parameters
   window_size: "10"
@@ -24,14 +52,13 @@ globals:
     restore_value: true
     initial_value: '0.0'
 
-
 esphome:
   name: ${name}
   friendly_name: ${friendly_name}
   min_version: 2024.6.0
   name_add_mac_suffix: false
   project:
-    name: esphome.web
+    name: cativo.climate
     version: dev
 
 wifi:
@@ -78,9 +105,12 @@ web_server:
     - id: sort_group_temperature_sensors
       name: "Temperature Sensors"
       sorting_weight: -8
+    - id: sort_group_valves
+      name: "Underfloor valves"
+      sorting_weight: -7
     - id: sort_group_settings
       name: "Settings"
-      sorting_weight: -7
+      sorting_weight: -6
     - id: sort_group_status
       name: "Status"
       sorting_weight: 100
