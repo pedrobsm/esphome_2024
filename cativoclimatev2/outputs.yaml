@@ -1,28 +1,36 @@
 output:
 
 ######------------Mixer Output with a proxy template output setting global variable-------------#####
-    - platform: template
-      id: ${name}_mixer_output
-      type: float
-      write_action:
-        - output.set_level: #writes state to real output
-            id: ${name}_primary_dac
-            level: !lambda return state;
-        - lambda: |- 
-            // Store the value in the global variable
-            id(mixer_output_level) = state;
-        - sensor.template.publish: #updates miser position sensor
-            id: ${name}_mixer_position
-            state: !lambda 'return id(mixer_output_level) * 100;'
+  - platform: template
+    id: ${name}_mixer_output
+    type: float
+    write_action:
+      - output.set_level: #writes state to real output
+          id: ${name}_primary_dac
+          level: !lambda return state;
+      - lambda: |- 
+          // Store the value in the global variable
+          id(mixer_output_level) = state;
+      - sensor.template.publish: #updates miser position sensor
+          id: ${name}_mixer_position
+          state: !lambda 'return id(mixer_output_level) * 100;'
 
-    - platform: esp32_dac
-      pin: GPIO26
-      id: ${name}_primary_dac
-      max_power: 0.50 #Limit to 5v since board is 0-10v
-      inverted: False
+  - platform: esp32_dac
+    pin: GPIO26
+    id: ${name}_primary_dac
+    max_power: 0.50 #Limit to 5v since board is 0-10v
+    inverted: False
 
-    - platform: esp32_dac
-      pin: GPIO25
-      id: ${name}_secondary_dac
-      max_power: 0.50 #Limit to 5v since board is 0-10v
-      inverted: False
+  - platform: esp32_dac
+    pin: GPIO25
+    id: ${name}_secondary_dac
+    max_power: 0.50 #Limit to 5v since board is 0-10v
+    inverted: False
+
+  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 1 } }
+  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 2 } }
+  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 3 } }
+  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 4 } }
+  - platform: slow_pwm
+    id: dummy_cool_pwm
+    period: 60s
