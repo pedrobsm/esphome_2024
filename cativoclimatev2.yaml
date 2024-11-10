@@ -1,5 +1,5 @@
 substitutions:
-  name: cativoclimatev2
+  name: cativoclim
   friendly_name: Cativo Thermostat
 
   division_1: "Bathroom"
@@ -74,7 +74,7 @@ wifi:
 logger:
 
 # Enable Home Assistant API
-#api:
+api:
 
 # Allow Over-The-Air updates
 ota:
