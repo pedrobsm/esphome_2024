@@ -1,8 +1,8 @@
 climate:
   - platform: pid
     name: Mixer controller
-    id: mixer_controller
-    sensor: "water_mixed_temp"
+    id: ${name}_mixer_controller
+    sensor: ${name}_water_mixed_temp
     default_target_temperature: 32.0
     heat_output: ${name}_mixer_output
     visual:
@@ -26,7 +26,14 @@ climate:
       # ki_multiplier: 0.5  # integral accumulates at only 5% of normal ki
       # kd_multiplier: 0.5   # derviative is turned off inside deadband
       deadband_output_averaging_samples: 5
+    on_state: # Puts the mixer in 50% to protect if the controller doesn't work
+      then:
+        - lambda: |-
+            if (x.mode == CLIMATE_MODE_OFF)
+              id(${name}_mixer_output).set_level(0.5);
     icon: mdi:thermostat
     web_server:
       sorting_group_id: sort_group_water_circuit
       sorting_weight: 60
+
+

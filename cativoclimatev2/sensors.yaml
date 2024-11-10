@@ -30,7 +30,7 @@ sensor:
   - platform: dallas_temp
     address: 0x863cf70457d39e28 #9
     name: "Water Source Temperature"
-    id: "water_source_temp"
+    id: ${name}_water_source_temp
     one_wire_id: dallas_1
     icon: mdi:thermometer-water
     web_server:
@@ -39,7 +39,7 @@ sensor:
   - platform: dallas_temp
     address: 0xef3c7d0457867428 #8
     name: "Water Mixed Temperature"
-    id: "water_mixed_temp"
+    id: ${name}_water_mixed_temp
     one_wire_id: dallas_1
     icon: mdi:thermometer-water
     web_server:
@@ -49,7 +49,7 @@ sensor:
   - platform: dallas_temp
     address: 0x5101193808681428
     name: "Water Inlet Temperature"
-    id: "water_inlet_temp"
+    id: ${name}_water_inlet_temp
     one_wire_id: dallas_1
     icon: mdi:thermometer-water
     web_server:
@@ -58,7 +58,7 @@ sensor:
   - platform: dallas_temp
     address: 0x9D011937F7E71028
     name: "Water Outlet Temperature"
-    id: "water_outlet_temp"
+    id: ${name}_water_outlet_temp
     one_wire_id: dallas_1
     icon: mdi:thermometer-water
     web_server:
@@ -68,7 +68,7 @@ sensor:
 
   - platform: template
     name: "Mixer position"
-    id: mixer_position
+    id: ${name}_mixer_position
     lambda: |-
       return id(mixer_output_level) * 100;  // Display as a percentage
     update_interval: 300s

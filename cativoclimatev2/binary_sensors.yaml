@@ -12,14 +12,14 @@ binary_sensor:
       max_length: 400ms
       then:
         # Single press action: move to next page
-        - display.page.show_next: climate_display
-        - component.update: climate_display
+        - display.page.show_next: ${name}_display
+        - component.update: ${name}_display
     - min_length: 500ms
       max_length: 2000ms
       then:
         # Long press action: change select option
-        - select.next: operation_mode
-        - component.update: climate_display
+        - select.next: climate_mode
+        - component.update: ${name}_display
     internal: True
 
 ######------------Sensors presence-------------#####
@@ -60,7 +60,7 @@ binary_sensor:
         input: true
       inverted: false
     name: "Mixer Error"
-    id: "mixer_error"
+    id: ${name}_mixer_error
     device_class: problem
     icon: mdi:alert
     web_server:
@@ -70,12 +70,22 @@ binary_sensor:
   - platform: gpio
     pin:
       pcf8574: inputs
-      number: 1
+      number: 5
       mode:
         input: true
       inverted: false
     name: "Water circulator is ON"
-    id: "water_circulator_on"
+    id: ${name}_water_circulator_on
+    on_press:
+      then:
+        - climate.control:
+            id: ${name}_mixer_controller
+            mode: HEAT
+    on_release:
+      then:
+        - climate.control:
+            id: ${name}_mixer_controller
+            mode: "OFF"
     device_class: running
     icon: mdi:pump
     web_server:
@@ -85,7 +95,7 @@ binary_sensor:
     #------------------------------ Control if at least one of the thermostats is ON to keep heatpump ON ----------
   - platform: template
     name: "Thermostats're ON"
-    id: any_thermostat_on
+    id: ${name}_any_thermostat_on
     condition:
       or:
         - switch.is_on: "${name}_${division_id_1}_thermostat"

@@ -1,13 +1,34 @@
 select:
   - platform: template
     name: "Operation mode"
-    id: operation_mode
+    id: climate_mode
     options:
-      - "Off"
-      - "Simple Thermostat"
-      - "Auto"
-    initial_option: "Off"
+      - "Thermostat"
+      - "PID"
+      - "External"
+    initial_option: "Thermostat"
     optimistic: true
     icon: mdi:cog
     web_server:
       sorting_group_id: sort_group_settings
+#    on_value:
+#      - lambda: |-
+#          switch (id(climate_mode).state) {
+#            case "External":
+#              // Disable both thermostats when 'External' mode is selected
+#              id(PID_thermostat).mode = esphome::climate::CLIMATE_MODE_OFF;
+          #     id(Thermostat_climate).mode = esphome::climate::CLIMATE_MODE_OFF;
+          #     break;
+          #   case "PID":
+          #     // Enable PID thermostat and disable the other one
+          #     id(PID_thermostat).mode = esphome::climate::CLIMATE_MODE_HEAT;  // Adjust mode as needed
+          #     id(Thermostat_climate).mode = esphome::climate::CLIMATE_MODE_OFF;
+          #     break;
+          #   case "Thermostat":
+          #     // Enable Thermostat and disable PID
+          #     id(Thermostat_climate).mode = esphome::climate::CLIMATE_MODE_HEAT;  // Adjust mode as needed
+          #     id(PID_thermostat).mode = esphome::climate::CLIMATE_MODE_OFF;
+          #     break;
+          #   default:
+          #     break;
+          # }

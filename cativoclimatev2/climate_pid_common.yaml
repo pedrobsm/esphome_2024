@@ -3,8 +3,8 @@
   # name: ${division_${nr}} PID Control
   # id: ${division_id_${nr}}_pid_control
   name: ${division_${nr}} Temperature Control
-  id: ${division_id_${nr}}_temperature_control
-  sensor: ${division_id_${nr}}_temperature
+  id: ${name}_${division_id_${nr}}_temperature_control
+  sensor: ${name}_${division_id_${nr}}_temperature
   default_target_temperature: ${def_temp_low}
   heat_output: ${name}_${division_id_${nr}}_pwm_control
   cool_output: dummy_cool_pwm

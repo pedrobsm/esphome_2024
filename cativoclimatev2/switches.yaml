@@ -74,6 +74,7 @@ switch:
       sorting_group_id: sort_group_thermostats
 
   - platform: restart
-    name: "${name}_restart"
+    id: "${name}_restart"
+    name: Restart
     web_server:
       sorting_group_id: sort_group_settings

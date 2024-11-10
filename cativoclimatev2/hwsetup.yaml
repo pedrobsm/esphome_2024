@@ -82,3 +82,8 @@ one_wire:
 #    pin: GPIO5 #PIN SPI_CS with a 10k pull-up Resistor
 #    id: dallas_5
 
+button:
+  - platform: template
+    name: "PID Mixer Autotune"
+    on_press:
+      - climate.pid.autotune: ${name}_mixer_controller
