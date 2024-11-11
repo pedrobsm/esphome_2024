@@ -76,16 +76,22 @@ logger:
 # Enable Home Assistant API
 api:
 
+http_request:
+  useragent: esphome/device
+  timeout: 10s
+  id: heat_pump_request
+  verify_ssl: false
+
 # Allow Over-The-Air updates
 ota:
 - platform: esphome
 
 # Allow provisioning Wi-Fi via serial
-improv_serial:
+#improv_serial:
 
 # In combination with the `ap` this allows the user
 # to provision wifi credentials to the device via WiFi AP.
-captive_portal:
+#captive_portal:
 
 # Sets up Bluetooth LE (Only on ESP32) to allow the user
 # to provision wifi credentials to the device.
@@ -124,3 +130,4 @@ web_server:
 <<: !include cativoclimatev2/switches.yaml
 <<: !include cativoclimatev2/climate.yaml
 <<: !include cativoclimatev2/selects.yaml
+<<: !include cativoclimatev2/scripts.yaml

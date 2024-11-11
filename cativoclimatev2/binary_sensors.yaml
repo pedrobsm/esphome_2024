@@ -58,10 +58,21 @@ binary_sensor:
       number: 0
       mode:
         input: true
-      inverted: false
+      inverted: true  #Not sure!
     name: "Mixer Error"
     id: ${name}_mixer_error
     device_class: problem
+    on_press:
+      then:
+        - logger.log:
+            level: ERROR
+            tag: "ALARM"
+            format: "Water mixer error signal received!"
+        - homeassistant.event:  # Sends a custom event to Home Assistant
+            event: esphome.critical_alarm
+            data:
+              message: "Water mixer error signal received!"
+              entity_id: binary_sensor.alarm_sensor
     icon: mdi:alert
     web_server:
       sorting_group_id: sort_group_status
@@ -73,7 +84,7 @@ binary_sensor:
       number: 5
       mode:
         input: true
-      inverted: false
+      inverted: true
     name: "Water circulator is ON"
     id: ${name}_water_circulator_on
     on_press:
@@ -94,14 +105,18 @@ binary_sensor:
 
     #------------------------------ Control if at least one of the thermostats is ON to keep heatpump ON ----------
   - platform: template
-    name: "Thermostats're ON"
-    id: ${name}_any_thermostat_on
+    name: "Valves're ON"
+    id: ${name}_any_valve_on
     condition:
       or:
-        - switch.is_on: "${name}_${division_id_1}_thermostat"
-        - switch.is_on: "${name}_${division_id_2}_thermostat"
-        - switch.is_on: "${name}_${division_id_3}_thermostat"
-        - switch.is_on: "${name}_${division_id_4}_thermostat"
+        - switch.is_on: "${name}_${division_id_1}_valve"
+        - switch.is_on: "${name}_${division_id_2}_valve"
+        - switch.is_on: "${name}_${division_id_3}_valve"
+        - switch.is_on: "${name}_${division_id_4}_valve"
+    on_press:
+      - script.execute: start_heat_pump
+    on_release:
+      - script.execute: stop_heat_pump
     device_class: running
     icon: mdi:pipe-valve
     web_server:
@@ -111,3 +126,35 @@ binary_sensor:
 #  - platform: homeassistant
 #    name: "Global switch state"
 #    entity_id: "{heatpump_power_id}"
+
+###------ HeatPump Status Sensors
+  - platform: template
+    name: "Heat pump reachable"
+    id: ${name}_heat_pump_reachable
+    device_class: connectivity
+    on_release:
+      then:
+        - logger.log:
+            level: ERROR
+            tag: "ALARM"
+            format: "Heat Pump Power Switch is not reachable!"
+        - homeassistant.event:  # Sends a custom event to Home Assistant
+            event: esphome.critical_alarm
+            data:
+              message: "Heat Pump Power Switch is not reachable!"
+              entity_id: binary_sensor.alarm_sensor
+    icon: mdi:wifi
+    web_server:
+      sorting_group_id: sort_group_status
+      sorting_weight: 6
+  - platform: template
+    id: ${name}_heat_pump_is_running
+    name: "Heat Pump Running"
+    device_class: running
+    icon: mdi:heat-pump-outline
+  - platform: template
+    id: ${name}_heat_pump_has_power
+    name: "Heat Pump has power"
+    device_class: plug
+    internal: True
+    icon: mdi:power-plug-outline

@@ -36,4 +36,31 @@ climate:
       sorting_group_id: sort_group_water_circuit
       sorting_weight: 60
 
-
+  - <<: !include
+      file: climate_pid_common.yaml
+      vars:
+        nr: 1
+        kp: 1.0
+        ki: 0.0001
+        kd: 0
+  - <<: !include
+      file: climate_pid_common.yaml
+      vars:
+        nr: 2
+        kp: 1.6
+        ki: 0.0001
+        kd: 0
+  - <<: !include
+      file: climate_pid_common.yaml
+      vars:
+        nr: 3
+        kp: 1.6
+        ki: 0.0001
+        kd: 0
+  - <<: !include
+      file: climate_pid_common.yaml
+      vars:
+        nr: 4
+        kp: 3
+        ki: 0.0001
+        kd: 400

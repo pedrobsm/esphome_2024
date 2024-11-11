@@ -1,0 +1,52 @@
+script:
+  - id: start_heat_pump
+    mode: single
+    then:
+      - script.stop: stop_heat_pump
+      - switch.turn_on: ${name}_heat_pump_power
+      - delay: 30s
+      - if: #Checks if any thermostat is still ON
+          condition:
+            lambda: "return id(${name}_any_valve_on).state == true;"
+          then:
+            - switch.turn_on: ${name}_heat_pump_switch
+  - id: stop_heat_pump
+    mode: single
+    then:
+      - script.stop: start_heat_pump
+      - delay: 30s
+      - if: #Checks if all thermostats are OFF
+          condition:
+            lambda: "return id(${name}_any_valve_on).state == false;"
+          then:
+            - switch.turn_off: ${name}_heat_pump_switch
+
+  - id: get_heat_pump_status
+    mode: single
+    then:
+    - http_request.get:
+        id: heat_pump_request
+        url: "http://192.168.33.95/status/"
+        capture_response: true
+        max_response_buffer_size: 1280
+        on_response:
+          then:
+            - lambda: |-
+                json::parse_json(body, [](JsonObject root) -> bool {
+                  if (root.containsKey("relays") && root.containsKey("meters")) {
+                    // Parse the response if JSON structure is as expected
+                    bool is_on = root["relays"][0]["ison"].as<bool>();
+                    float power = root["meters"][0]["power"].as<float>();
+                    bool is_run = root["meters"][0]["is_valid"].as<bool>() && (power > 150.0);
+
+                    id(${name}_heat_pump_reachable).publish_state(true);
+                    id(${name}_heat_pump_has_power).publish_state(is_on);
+                    id(${name}_heat_pump_is_running).publish_state(is_run);
+                    return true;
+                  } else {
+                    // Log an error and update states if the expected JSON keys are not present
+                    ESP_LOGE("Heatpump JSON", "JSON structure missing required fields");
+                    id(${name}_heat_pump_reachable).publish_state(false);
+                    return false;
+                  }
+                });

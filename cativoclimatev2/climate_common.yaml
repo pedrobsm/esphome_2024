@@ -1,7 +1,7 @@
 - platform: thermostat
   ### SETUP
   name: ${division_${nr}} Temperature Control
-  id: ${name}_${division_id_${nr}}_temperature_control
+  id: ${name}_${division_id_${nr}}_thermostat
   sensor: ${name}_${division_id_${nr}}_temperature
   ### PRESETS
   preset:
@@ -34,7 +34,7 @@
   min_heating_run_time: ${def_min_heating_run_time}
   ### ACTIONS
   off_mode:
-    - switch.turn_off: ${name}_${division_id_${nr}}_thermostat
+    - switch.turn_off: ${name}_${division_id_${nr}}_valve
   heat_mode:
     - script.execute: set_mode_heat
   cool_mode:
@@ -43,15 +43,15 @@
     - script.execute: set_mode_heat
   cool_action:
     - script.wait: set_mode_cool
-    - switch.turn_on: ${name}_${division_id_${nr}}_thermostat
+    - switch.turn_on: ${name}_${division_id_${nr}}_valve
   heat_action:
     - script.wait: set_mode_heat
-    - switch.turn_on: ${name}_${division_id_${nr}}_thermostat
+    - switch.turn_on: ${name}_${division_id_${nr}}_valve
     # - lambda: |-
     #     float out = 0.0;
-    #     out = (${name}_${division_id_${nr}}_thermostat.target_temperature_low - ${name}_${division_id_${nr}}_temperature.state) * id(PID_setup_kp).state
+    #     out = (${name}_${division_id_${nr}}_valve.target_temperature_low - ${name}_${division_id_${nr}}_temperature.state) * id(PID_setup_kp).state
     #     id(${name}_${division_id_${nr}}_pwm_control).set_level(out);
   idle_action:
-    - switch.turn_off: ${name}_${division_id_${nr}}_thermostat
+    - switch.turn_off: ${name}_${division_id_${nr}}_valve
     # - lambda: |-
     #     id(${name}_${division_id_${nr}}_pwm_control).set_level(division_pwm_min_power);

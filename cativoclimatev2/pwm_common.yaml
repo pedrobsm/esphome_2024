@@ -5,9 +5,9 @@
   min_power: ${division_pwm_min_power}
   zero_means_zero: true
   turn_on_action:
-    - switch.turn_on: ${name}_${division_id_${nr}}_thermostat
+    - switch.turn_on: ${name}_${division_id_${nr}}_valve
     - logger.log: "!!!!ON!!!! ${name}_${division_id_${nr}}_pwm_control IS ON !!!!!!"
   turn_off_action:
-    - switch.turn_off: ${name}_${division_id_${nr}}_thermostat
+    - switch.turn_off: ${name}_${division_id_${nr}}_valve
     - logger.log: "!!!!OFF!!!! ${name}_${division_id_${nr}}_pwm_control IS OFF !!!!!!"
     

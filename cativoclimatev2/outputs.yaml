@@ -27,10 +27,10 @@ output:
     max_power: 0.50 #Limit to 5v since board is 0-10v
     inverted: False
 
-  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 1 } }
-  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 2 } }
-  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 3 } }
-  - <<: !include { file: m5clim/pwm_common.yaml, vars: { nr: 4 } }
+  - <<: !include { file: pwm_common.yaml, vars: { nr: 1 } }
+  - <<: !include { file: pwm_common.yaml, vars: { nr: 2 } }
+  - <<: !include { file: pwm_common.yaml, vars: { nr: 3 } }
+  - <<: !include { file: pwm_common.yaml, vars: { nr: 4 } }
   - platform: slow_pwm
     id: dummy_cool_pwm
     period: 60s

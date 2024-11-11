@@ -87,3 +87,4 @@ button:
     name: "PID Mixer Autotune"
     on_press:
       - climate.pid.autotune: ${name}_mixer_controller
+    icon: mdi:tune

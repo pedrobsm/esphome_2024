@@ -15,11 +15,14 @@ display:
           it.print(0, 10, id(font_arial_20), "Page 2");
       - id: page3
         lambda: |-
-          it.image(0, 0, id(livingroom));
+          it.image(0, 0, id(bathroom));
           it.image(0, 16, id(bedroom));
           it.image(0, 32, id(office));
-          it.image(0, 48, id(bathroom));
-          it.printf( 16, 32, id(font_arial_12), "%.1fC", id(${name}_office_temperature).state);
+          it.image(0, 48, id(livingroom));
+          it.printf( 16, 0, id(font_arial_12), "%.1fC", id(${division_id_1}_temperature).state);
+          it.printf( 16, 16, id(font_arial_12), "%.1fC", id(${division_id_2}_temperature).state);
+          it.printf( 16, 32, id(font_arial_12), "%.1fC", id(${division_id_3}_temperature).state);
+          it.printf( 16, 48, id(font_arial_12), "%.1fC", id(${division_id_4}_temperature).state);
 
 
 image:

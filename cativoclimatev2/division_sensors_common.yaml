@@ -5,7 +5,7 @@
 #  bindkey: ${bkey}
   temperature:
     name: ${division_${nr}} Temperature
-    id: ${name}_${division_id_${nr}}_temperature
+    id: ${division_id_${nr}}_temperature
     accuracy_decimals: 1
     filters:
       - sliding_window_moving_average:
